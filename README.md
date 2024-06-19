@@ -44,6 +44,14 @@ Ensure both `scylla` and `todo-api` containers are running:
 docker ps
 ```
 
+### 5. Run the Application
+
+Ensure if there is no error, and then type this in terminal.
+
+```bash
+docker start todo-api
+```
+
 ### 5. Accessing the API
 
 The API endpoints can be accessed at `http://localhost:8080/todos`.
