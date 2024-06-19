@@ -13,6 +13,7 @@ func main() {
     router := gin.Default()
 
     router.POST("/todos", handlers.CreateTodoHandler)
+	router.GET("/todos/all", handlers.ListAllTodosHandler)
     router.GET("/todos/:user_id/:id", handlers.GetTodoHandler)
     router.PUT("/todos/:user_id/:id", handlers.UpdateTodoHandler)
     router.DELETE("/todos/:user_id/:id", handlers.DeleteTodoHandler)

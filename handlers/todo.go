@@ -31,6 +31,29 @@ func CreateTodoHandler(c *gin.Context) {
     c.JSON(http.StatusCreated, todo)
 }
 
+func ListAllTodosHandler(c *gin.Context) {
+    var todos []models.Todo
+
+    sortBy := c.DefaultQuery("sortBy", "created") 
+
+    query := `SELECT id, user_id, title, description, status, created, updated FROM todos`
+    query += ` ORDER BY ` + sortBy + ` DESC`
+    iter := db.Session.Query(query).Iter()
+
+    var todo models.Todo
+    for iter.Scan(&todo.ID, &todo.UserID, &todo.Title, &todo.Description, &todo.Status, &todo.Created, &todo.Updated) {
+        todos = append(todos, todo)
+    }
+
+    if err := iter.Close(); err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    c.JSON(http.StatusOK, todos)
+}
+
+
 func GetTodoHandler(c *gin.Context) {
     userID, err := gocql.ParseUUID(c.Param("user_id"))
     if err != nil {
@@ -110,10 +133,10 @@ func ListTodosHandler(c *gin.Context) {
         return
     }
     status := c.Query("status")
-    pageSize := 10 // Default page size
+    pageSize := 10 
     page := c.Query("page")
+    sortBy := c.DefaultQuery("sortBy", "created") 
 
-    // Parse the page number, defaulting to 1 if not provided or invalid
     pageNumber, err := strconv.Atoi(page)
     if err != nil || pageNumber < 1 {
         pageNumber = 1
@@ -126,10 +149,11 @@ func ListTodosHandler(c *gin.Context) {
 
     query := `SELECT id, user_id, title, description, status, created, updated FROM todos WHERE user_id = ?`
     if status != "" {
-        query += ` AND status = ? LIMIT ? OFFSET ?`
+        query += ` AND status = ?`
+        query += ` ORDER BY ` + sortBy + ` DESC LIMIT ? OFFSET ?`
         iter = db.Session.Query(query, userID, status, pageSize, offset).Iter()
     } else {
-        query += ` LIMIT ? OFFSET ?`
+        query += ` ORDER BY ` + sortBy + ` DESC LIMIT ? OFFSET ?`
         iter = db.Session.Query(query, userID, pageSize, offset).Iter()
     }
 
