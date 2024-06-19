@@ -33,7 +33,6 @@ docker exec -it scylla cqlsh
 Create Keyspace and Table:
 
 ```sql
-Copy code
 CREATE KEYSPACE IF NOT EXISTS todo_keyspace WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
 
 CREATE TABLE IF NOT EXISTS todo_keyspace.todos (
