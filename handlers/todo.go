@@ -107,16 +107,16 @@ func UpdateTodoHandler(c *gin.Context) {
 }
 
 func DeleteTodoHandler(c *gin.Context) {
-    userID, err := gocql.ParseUUID(c.Param("user_id"))
-    if err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
-        return
-    }
-    todoID, err := gocql.ParseUUID(c.Param("id"))
-    if err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid todo ID"})
-        return
-    }
+	userID, err := gocql.ParseUUID(c.Param("user_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		return
+	}
+	todoID, err := gocql.ParseUUID(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid todo ID"})
+		return
+	}
 
     if err := db.Session.Query(`DELETE FROM todos WHERE user_id = ? AND id = ?`, userID, todoID).Exec(); err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
