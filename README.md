@@ -1,4 +1,3 @@
-
 # Go TODO API with ScyllaDB
 
 This repository contains a simple TODO API implemented in Go, using ScyllaDB for data storage. The API supports basic CRUD operations for managing TODO items and includes pagination functionality for listing TODO items.
@@ -21,13 +20,41 @@ git clone <repository-url>
 cd todo-api
 ```
 
-### 2. Start ScyllaDB Container
+### 2. Verify Keyspace and Table Creation
+
+Ensure the todo_keyspace and todos table are created in ScyllaDB. You can use cqlsh from within the container to do this.
+
+Enter the ScyllaDB container:
+
+```bash
+docker exec -it scylla cqlsh
+```
+
+Create Keyspace and Table:
+
+```sql
+Copy code
+CREATE KEYSPACE IF NOT EXISTS todo_keyspace WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
+
+CREATE TABLE IF NOT EXISTS todo_keyspace.todos (
+    id UUID,
+    user_id UUID,
+    title TEXT,
+    description TEXT,
+    status TEXT,
+    created TIMESTAMP,
+    updated TIMESTAMP,
+    PRIMARY KEY (user_id, id)
+);
+```
+
+### 3. Start ScyllaDB Container
 
 ```bash
 docker run --name scylla -p 9042:9042 -d scylladb/scylla
 ```
 
-### 3. Build and Run the TODO API
+### 4. Build and Run the TODO API
 
 #### Using Docker
 
@@ -36,7 +63,7 @@ docker build -t todo-api .
 docker run --name todo-api --network scylla-net -p 8080:8080 -d todo-api
 ```
 
-### 4. Verify Containers
+### 5. Verify Containers
 
 Ensure both `scylla` and `todo-api` containers are running:
 
@@ -44,7 +71,7 @@ Ensure both `scylla` and `todo-api` containers are running:
 docker ps
 ```
 
-### 5. Run the Application
+### 6. Run the Application
 
 Ensure if there is no error, and then type this in terminal.
 
@@ -52,11 +79,11 @@ Ensure if there is no error, and then type this in terminal.
 docker start todo-api
 ```
 
-### 5. Accessing the API
+### 7. Accessing the API
 
 The API endpoints can be accessed at `http://localhost:8080/todos`.
 
-### 6. API Endpoints
+### 8. API Endpoints
 
 - **POST /todos**: Create a new TODO item
 - **GET /todos**: List TODO items with pagination (`page` and `limit` query parameters)
@@ -64,11 +91,11 @@ The API endpoints can be accessed at `http://localhost:8080/todos`.
 - **PUT /todos/{id}**: Update a TODO item
 - **DELETE /todos/{id}**: Delete a TODO item
 
-### 7. Postman Testing
+### 9. Postman Testing
 
 Use Postman or any HTTP client to test the API endpoints as described above.
 
-### 8. Troubleshooting
+### 10. Troubleshooting
 
 If you encounter any issues:
 
